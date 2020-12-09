@@ -63,11 +63,12 @@ function load_mailbox(mailbox) {
 
         // Finalized Email Entry
         //email_entry = sender + email_content + timestamp;
-        email_entry.innerHTML = item.sender + "" + item.body + "" + item.timestamp;
+        email_entry.innerHTML = item.sender + ", " + item.body + ", " + item.timestamp;
 
         // Email entry formatting
         email_entry.style.border = "medium groove #2C3E50";
         email_entry.style.borderRadius = "5px";
+        email_entry.style.cursor = "pointer"
           // If email has been read, its background is white, else it's grey
           if (item.read) {
             email_entry.style.backgroundColor = "#FDFEFE";
@@ -76,7 +77,7 @@ function load_mailbox(mailbox) {
           }
         
         // Viewing Email functionality
-        email_entry.addEventListener('click', view_email);
+        email_entry.addEventListener('click', () => view_email(item));
 
         document.querySelector('#emails-view').append(email_entry);
       });
@@ -86,7 +87,7 @@ function load_mailbox(mailbox) {
   return false;
 }
 
-function view_email() {
+function view_email(email) {
   // Hide other views (mailbox, sent, compose, archive)
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
@@ -94,8 +95,37 @@ function view_email() {
 
   // Clear out previous loaded email
   document.querySelector('#email-entry-view').innerHTML = '';
-  //document.querySelector('#email-entry-view').value = '';
-  document.querySelector('#email-entry-view').append("hello lol");
+    //document.querySelector('#email-entry-view').value = '';
+
+  // Contents of email entry
+  const email_entry = document.createElement('div');
+  email_entry.innerHTML += "<div>" + "From: " + email.sender + "</div>";
+  email_entry.innerHTML += "<div>" + "To: " + email.recipients.join(',') + "</div>";
+  email_entry.innerHTML += "<div>" + "Subject: " + email.subject + "</div>";
+  email_entry.innerHTML += "<div>" + "Timestamp: " + email.timestamp + "</div>";
+
+  email_entry.innerHTML += "<hr>";
+
+  email_entry.innerHTML += email.body;
+
+  /*
+  email.forEach((item) => {
+    if (item) {
+      email_entry += document.createElement('div') + "<div>";
+    }
+  }); */
+  
+  // Mark the email as read
+  fetch(`/emails/${email.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
+
+  // Adding the details of 
+  document.querySelector('#email-entry-view').append(email_entry);
+  
 }
 
 function send_email() {
