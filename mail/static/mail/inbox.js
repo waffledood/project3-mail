@@ -32,6 +32,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-entry-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -73,6 +74,9 @@ function load_mailbox(mailbox) {
           } else {
             email_entry.style.backgroundColor = "#99A3A4";
           }
+        
+        // Viewing Email functionality
+        email_entry.addEventListener('click', view_email);
 
         document.querySelector('#emails-view').append(email_entry);
       });
@@ -80,6 +84,18 @@ function load_mailbox(mailbox) {
   });
 
   return false;
+}
+
+function view_email() {
+  // Hide other views (mailbox, sent, compose, archive)
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-entry-view').style.display = 'block';
+
+  // Clear out previous loaded email
+  document.querySelector('#email-entry-view').innerHTML = '';
+  //document.querySelector('#email-entry-view').value = '';
+  document.querySelector('#email-entry-view').append("hello lol");
 }
 
 function send_email() {
@@ -103,13 +119,6 @@ function send_email() {
         load_mailbox('sent');
       }
   });
-
-  return false;
-}
-
-function send_email2() {
-  // 
-  console.log("success haha")
 
   return false;
 }
