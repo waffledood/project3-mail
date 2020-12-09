@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
   load_mailbox('inbox');
 
   // When User sends an email
+  //document.querySelector('#compose-form').addEventListener('submit', send_email);
+  document.querySelector('#compose-form').onsubmit = send_email;
+
 });
 
 function compose_email() {
@@ -36,4 +39,25 @@ function load_mailbox(mailbox) {
 
 function send_email() {
   // 
+  fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+        recipients: document.querySelector('#compose-recipients').value,
+        subject: document.querySelector('#compose-subject').value,
+        body: document.querySelector('#compose-body').value
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+      // Print result
+      console.log(result);
+
+      if (result.error) {
+        
+      } else {
+        load_mailbox('sent');
+      }
+  });
+
+  return false;
 }
