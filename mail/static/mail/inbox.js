@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   load_mailbox('inbox');
 
   // When User sends an email
-  //document.querySelector('#compose-form').addEventListener('submit', send_email);
+  //document.querySelector('#compose-form').addEventListener('submit', send_email2);
   document.querySelector('#compose-form').onsubmit = send_email;
 
 });
@@ -35,6 +35,29 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  // Load emails
+  fetch(`/emails/${mailbox}`)
+  .then(response => response.json())
+  .then(emails => {
+      // Print emails
+      //console.log(emails);
+
+      //emails.forEach(element => console.log(element.id));
+      emails.forEach(function(item) {
+        /*
+        const email_entry = "<div>";
+        email_entry += "sender: " + element.sender;
+        console.log(element.id); */
+        const email_entry = document.createElement('div');
+        email_entry.innerHTML = item.id;
+
+        document.querySelector('#emails-view').append(email_entry);
+      });
+      
+  });
+
+  return false;
 }
 
 function send_email() {
@@ -58,6 +81,13 @@ function send_email() {
         load_mailbox('sent');
       }
   });
+
+  return false;
+}
+
+function send_email2() {
+  // 
+  console.log("success haha")
 
   return false;
 }
