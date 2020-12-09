@@ -43,14 +43,36 @@ function load_mailbox(mailbox) {
       // Print emails
       //console.log(emails);
 
-      //emails.forEach(element => console.log(element.id));
-      emails.forEach(function(item) {
-        /*
-        const email_entry = "<div>";
-        email_entry += "sender: " + element.sender;
-        console.log(element.id); */
+      //emails.forEach(function(item) {
+      emails.forEach(item => {
         const email_entry = document.createElement('div');
-        email_entry.innerHTML = item.id;
+
+        // Email entry contents
+          // Sender
+          const sender = document.createElement('div');
+          sender.innerHTML = item.sender;
+
+          // Email content
+          const email_content = document.createElement('div');
+          email_content.innerHTML = item.body;
+
+          // Email timestamp
+          const timestamp = document.createElement('div');
+          timestamp.innerHTML = item.timestamp;
+
+        // Finalized Email Entry
+        //email_entry = sender + email_content + timestamp;
+        email_entry.innerHTML = item.sender + "" + item.body + "" + item.timestamp;
+
+        // Email entry formatting
+        email_entry.style.border = "medium groove #2C3E50";
+        email_entry.style.borderRadius = "5px";
+          // If email has been read, its background is white, else it's grey
+          if (item.read) {
+            email_entry.style.backgroundColor = "#FDFEFE";
+          } else {
+            email_entry.style.backgroundColor = "#99A3A4";
+          }
 
         document.querySelector('#emails-view').append(email_entry);
       });
