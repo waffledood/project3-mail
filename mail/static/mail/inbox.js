@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
-  document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
-  document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
+document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
+document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
+document.querySelector('#compose').addEventListener('click', compose_email);
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -103,12 +103,18 @@ function view_email(email) {
   email_entry.innerHTML += "<div>" + "To: " + email.recipients.join(',') + "</div>";
   email_entry.innerHTML += "<div>" + "Subject: " + email.subject + "</div>";
   email_entry.innerHTML += "<div>" + "Timestamp: " + email.timestamp + "</div>";
-
   email_entry.innerHTML += "<hr>";
-
   email_entry.innerHTML += email.body;
 
+  // Archive button 
+  const archive_button = document.createElement('button');
+  archive_button.className = "btn btn-sm btn-outline-primary";
+  archive_button.innerHTML = "Archive";
+  // Adding Archive functionality
+  archive_button.addEventListener('click', () => archive_email(email.id));
+
   /*
+  // Contents of email entry
   email.forEach((item) => {
     if (item) {
       email_entry += document.createElement('div') + "<div>";
@@ -125,7 +131,21 @@ function view_email(email) {
 
   // Adding the details of 
   document.querySelector('#email-entry-view').append(email_entry);
+  document.querySelector('#email-entry-view').append(archive_button);
   
+}
+
+function archive_email(email_id) {
+  // Archive the specified email as per its id
+
+  fetch(`/emails/${email_id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived: true
+    })
+  })
+
+  console.log("Email archived: " + email_id);
 }
 
 function send_email() {
