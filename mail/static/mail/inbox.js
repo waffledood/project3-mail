@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
-document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
-document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
+  document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
+  document.querySelector('#compose').addEventListener('click', compose_email);
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -77,7 +77,7 @@ function load_mailbox(mailbox) {
           }
         
         // Viewing Email functionality
-        email_entry.addEventListener('click', () => view_email(item));
+        email_entry.addEventListener('click', () => view_email(item, mailbox));
 
         document.querySelector('#emails-view').append(email_entry);
       });
@@ -87,7 +87,8 @@ function load_mailbox(mailbox) {
   return false;
 }
 
-function view_email(email) {
+function view_email(email, mailbox) {
+
   // Hide other views (mailbox, sent, compose, archive)
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
@@ -106,50 +107,63 @@ function view_email(email) {
   email_entry.innerHTML += "<hr>";
   email_entry.innerHTML += email.body;
 
-  // Archive button 
-  const archive_button = document.createElement('button');
-  archive_button.className = "btn btn-sm btn-outline-primary";
-  archive_button.innerHTML = "Archive";
-  // Adding Archive functionality
-  archive_button.addEventListener('click', () => archive_email(email.id));
-
-  /*
-  // Contents of email entry
-  email.forEach((item) => {
-    if (item) {
-      email_entry += document.createElement('div') + "<div>";
-    }
-  }); */
-  
-  // Mark the email as read
-  fetch(`/emails/${email.id}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-        read: true
-    })
-  })
-
-  // Adding the details of 
+  // Adding the Email content
   document.querySelector('#email-entry-view').append(email_entry);
-  document.querySelector('#email-entry-view').append(archive_button);
+
+  if (mailbox !== 'sent') {
+    // Archive / Unarchive button 
+    const archive_button = document.createElement('button');
+    archive_button.className = "btn btn-sm btn-outline-primary";
+
+    // Format the Archive / Unarchive button accordingly & load the Archive/Unarchive functionality
+    if (email.archived) {
+      archive_button.innerHTML = "Unarchive";
+      archive_button.addEventListener('click', () => archive_email(email.id, false));
+    } else {
+      archive_button.innerHTML = "Archive";
+      archive_button.addEventListener('click', () => archive_email(email.id, true));
+    } 
+
+    /*
+    // Contents of email entry
+    email.forEach((item) => {
+      if (item) {
+        email_entry += document.createElement('div') + "<div>";
+      }
+    }); */
+    
+    // Mark the email as read
+    fetch(`/emails/${email.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+          read: true
+      })
+    })
+
+    // Adding the Archive button
+    document.querySelector('#email-entry-view').append(archive_button);
+  }
   
 }
 
-function archive_email(email_id) {
-  // Archive the specified email as per its id
+function archive_email(email_id, bool_archive) {
 
+  // Archive / Unarchive the specified email
   fetch(`/emails/${email_id}`, {
     method: 'PUT',
     body: JSON.stringify({
-        archived: true
+        archived: bool_archive
     })
   })
 
-  console.log("Email archived: " + email_id);
+  load_mailbox('inbox');
+
+  console.log("Email, " + bool_archive + ": " + email_id);
 }
 
 function send_email() {
-  // 
+  
+  // Send the email with its relevant contents 
   fetch('/emails', {
     method: 'POST',
     body: JSON.stringify({
