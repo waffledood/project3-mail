@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   load_mailbox('inbox');
 
   // When User sends an email
-  //document.querySelector('#compose-form').addEventListener('submit', send_email2);
+  //document.querySelector('#compose-form').addEventListener('submit', send_email);
   document.querySelector('#compose-form').onsubmit = send_email;
 
 });
@@ -125,7 +125,7 @@ function view_email(email, mailbox) {
   // Adding the Email content
   document.querySelector('#email-entry-view').append(email_entry);
 
-  // Archive / Unarchive functionality only applies for other mailboxes 
+  // Archive / Unarchive functionality only applies for all mailboxes except 'Sent'
   if (mailbox !== 'sent') {
     // Archive / Unarchive button 
     const archive_button = document.createElement('button');
@@ -194,7 +194,11 @@ function send_email() {
       console.log(result);
 
       if (result.error) {
-        
+        document.querySelector('#compose-view').value = '';
+        const alert = document.createElement('div');
+        alert.innerHTML = 'Error!';
+        alert.className = "alert alert-danger";
+        document.querySelector('#compose-view').append(alert);
       } else {
         load_mailbox('sent');
       }
